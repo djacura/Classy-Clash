@@ -20,6 +20,8 @@ Vector2 Character::getScreenPos()
 
 void Character::tick(float deltaTime)
 {
+    if (!getAlive()) return;
+
     if (IsKeyDown(KEY_A))
         velocity.x -= 1.0;
     if (IsKeyDown(KEY_D))
@@ -43,7 +45,7 @@ void Character::tick(float deltaTime)
             weapon.width * scale,
             weapon.height * scale
         };
-        rotation = 35.f;
+        IsMouseButtonDown(MOUSE_LEFT_BUTTON) ? rotation = 35.f : rotation = 0.f;
     }
     else
     {
@@ -55,20 +57,20 @@ void Character::tick(float deltaTime)
             weapon.width * scale,
             weapon.height * scale
         };
-        rotation = -35.f;
+        IsMouseButtonDown(MOUSE_LEFT_BUTTON) ? rotation = -35.f : rotation = 0.f;
     }
 
     // draw the sword
     Rectangle source{0.f, 0.f, static_cast<float>(weapon.width) * rightLeft, static_cast<float>(weapon.height)};
     Rectangle dest{getScreenPos().x + offset.x, getScreenPos().y + offset.y, weapon.width * scale, weapon.height * scale};
     DrawTexturePro(weapon, source, dest, origin, rotation, WHITE);
-
-    DrawRectangleLines(
-        weaponCollisionRec.x,
-        weaponCollisionRec.y,
-        weaponCollisionRec.width,
-        weaponCollisionRec.height,
-        RED
-    );
 }
 
+void Character::takeDamage(float damage)
+{
+    health -= damage;
+    if (health <= 0.f)
+    {
+        setAlive(false);
+    }
+}
